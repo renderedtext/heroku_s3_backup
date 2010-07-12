@@ -15,11 +15,10 @@ class HerokuS3Backup
         "#{ENV['APP_NAME']}-heroku-backups"
       end
       
-      begin
-        bucket = AWS::S3::Bucket.find(bucket_name) || AWS::S3::Bucket.create(bucket_name)
-      rescue AWS::S3::S3Exception => e
-        puts "Could not find or create #{bucket_name}"
-        raise
+      bucket = begin
+        AWS::S3::Bucket.find(bucket_name)
+      rescue AWS::S3::NoSuchBucket
+        AWS::S3::Bucket.create(bucket_name)
       end
       
       raise "Amazon bucket error" unless bucket

@@ -1,7 +1,8 @@
+require 'aws/s3'
+
 class HerokuS3Backup
   def self.backup
     begin
-      include AWS::S3
       puts "[#{Time.now}] heroku:backup started"
       name = "#{ENV['APP_NAME']}-#{Time.now.strftime('%Y-%m-%d-%H%M%S')}.dump"
       s3 = AWS::S3::Base.establish_connection!(
@@ -13,14 +14,20 @@ class HerokuS3Backup
       else
         "#{ENV['APP_NAME']}-heroku-backups"
       end
-      bucket = Bucket.find(bucket_name) || Bucket.create(bucket_name)
       
-      throw "Amazon bucket error" unless bucket
+      begin
+        bucket = AWS::S3::Bucket.find(bucket_name) || AWS::S3::Bucket.create(bucket_name)
+      rescue AWS::S3::S3Exception => e
+        puts "Could not find or create #{bucket_name}"
+        raise
+      end
+      
+      raise "Amazon bucket error" unless bucket
       
       db = ENV['DATABASE_URL'].match(/postgres:\/\/([^:]+):([^@]+)@([^\/]+)\/(.+)/)
       system "PGPASSWORD=#{db[2]} pg_dump -Fc -i --username=#{db[1]} --host=#{db[3]} #{db[4]} > tmp/#{name}"
 
-      S3Object.store("backups/" + name, open("tmp/#{name}"), bucket_name)
+      AWS::S3::S3Object.store("backups/" + name, open("tmp/#{name}"), bucket_name)
       system "rm tmp/#{name}"
       puts "[#{Time.now}] heroku:backup complete"
       # rescue Exception => e

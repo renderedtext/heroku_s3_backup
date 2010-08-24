@@ -1,33 +1,41 @@
-require 'aws/s3'
+require 'fog'
 
 class HerokuS3Backup
   def self.backup
     begin
       puts "[#{Time.now}] heroku:backup started"
-      name = "#{ENV['APP_NAME']}-#{Time.now.strftime('%Y-%m-%d-%H%M%S')}.dump"
-      s3 = AWS::S3::Base.establish_connection!(
-        :access_key_id     => ENV['s3_access_key_id'],
-        :secret_access_key => ENV['s3_secret_access_key']
-      )
+      name = "#{ENV['APP_NAME']}-#{Time.now.strftime('%Y-%m-%d-%H%M%S')}.sql"
+
+      db = ENV['DATABASE_URL'].match(/postgres:\/\/([^:]+):([^@]+)@([^\/]+)\/(.+)/)
+      system "PGPASSWORD=#{db[2]} pg_dump -Fc -i --username=#{db[1]} --host=#{db[3]} #{db[4]} > tmp/#{name}"
+
+      puts "gzipping sql file..."
+      `gzip tmp/#{name}`
+
+      backup_path = "tmp/#{name}.gz"
+
       bucket_name = if ENV['backup_bucket']
         ENV['backup_bucket']
       else
         "#{ENV['APP_NAME']}-heroku-backups"
       end
-      
-      bucket = begin
-        AWS::S3::Bucket.find(bucket_name)
-      rescue AWS::S3::NoSuchBucket
-        AWS::S3::Bucket.create(bucket_name)
-      end
-      
-      raise "Amazon bucket error" unless bucket
-      
-      db = ENV['DATABASE_URL'].match(/postgres:\/\/([^:]+):([^@]+)@([^\/]+)\/(.+)/)
-      system "PGPASSWORD=#{db[2]} pg_dump -Fc -i --username=#{db[1]} --host=#{db[3]} #{db[4]} > tmp/#{name}"
 
-      AWS::S3::S3Object.store("backups/" + name, open("tmp/#{name}"), bucket_name)
-      system "rm tmp/#{name}"
+      s3 = Fog::AWS::S3.new(
+        :aws_access_key_id => ENV['s3_access_key_id'],
+        :aws_secret_access_key => ENV['s3_secret_access_key']
+      )
+      s3.get_service
+    
+      begin
+        s3.get_bucket(bucket_name)
+        directory = s3.directories.get(bucket_name)
+      rescue Excon::Errors::NotFound
+        directory = s3.directories.create(:key => bucket_name)
+        s3.get_bucket(bucket_name)
+      end
+
+      directory.files.create(:key => "db/#{name}", :body => open(backup_path))
+      system "rm #{backup_path}"
       puts "[#{Time.now}] heroku:backup complete"
       # rescue Exception => e
       #   require 'toadhopper'

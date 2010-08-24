@@ -5,13 +5,13 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "heroku_s3_backup"
-    gem.summary = %Q{Gem to backup your database on Heroku.com to S3.}
-    gem.description = %Q{http://almosteffortless.com/2010/04/14/automated-heroku-backups/}
-    gem.email = "edavis@littlestreamsoftware.com"
-    gem.homepage = "http://github.com/edavis10/heroku_s3_backup"
-    gem.authors = ["Eric Davis", "Trevor Turk"]
+    gem.summary = %Q{Gem to backup your database on Heroku.com to S3. Fork uses the fog gem}
+    gem.description = %Q{http://almosteffortless.com/2010/04/14/automated-heroku-backups/ My fork replaces right_aws/aws-s3 with the fog gem}
+    gem.email = "jack@jackchu.com"
+    gem.homepage = "http://github.com/kamui/heroku_s3_backup"
+    gem.authors = ["Eric Davis", "Trevor Turk", "Jesse Storimer", "Jack Chu"]
     gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
-    gem.add_dependency('right_aws', '~> 1.10')
+    gem.add_dependency('fog', '~> 0.2.28')
     gem.files =  FileList[
                           "[A-Z]*",
                           "init.rb",

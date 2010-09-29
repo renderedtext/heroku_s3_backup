@@ -20,7 +20,7 @@ class HerokuS3Backup
         "#{ENV['APP_NAME']}-heroku-backups"
       end
 
-      s3 = Fog::AWS::S3.new(
+      s3 = Fog::AWS::Storage.new(
         :aws_access_key_id => ENV['s3_access_key_id'],
         :aws_secret_access_key => ENV['s3_secret_access_key']
       )

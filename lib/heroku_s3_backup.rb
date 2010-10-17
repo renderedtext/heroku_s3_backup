@@ -21,8 +21,8 @@ class HerokuS3Backup
       end
 
       s3 = Fog::AWS::Storage.new(
-        :aws_access_key_id => ENV['s3_access_key_id'],
-        :aws_secret_access_key => ENV['s3_secret_access_key']
+        :aws_access_key_id => ENV['S3_KEY'],
+        :aws_secret_access_key => ENV['S3_SECRET']
       )
       s3.get_service
     

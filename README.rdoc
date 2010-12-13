@@ -8,7 +8,7 @@ Gem to backup your database on Heroku.com to S3.
 2. Add this to your config/production.rb
      config.gem 'jstorimer-heroku_s3_back', :lib => 'heroku_s3_backup'
 2. Add your S3 config to Heroku
-     heroku config:add s3_access_key_id=YOUR_ID s3_secret_access_key=YOUR_KEY
+     heroku config:add S3_KEY=YOUR_ID S3_SECRET=YOUR_KEY
 3. Run the HerokuS3Backup.backup method from your console or a cronjob
      task :cron => :environment do
        HerokuS3Backup.backup

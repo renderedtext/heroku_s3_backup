@@ -34,7 +34,7 @@ class HerokuS3Backup
         s3.get_bucket(bucket_name)
       end
 
-      directory.files.create(:key => "db/#{name}", :body => open(backup_path))
+      directory.files.create(:key => "db/#{name}.gz", :body => open(backup_path))
       system "rm #{backup_path}"
       puts "[#{Time.now}] heroku:backup complete"
       

@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "heroku_s3_backup"
-    gem.summary = %Q{Gem to backup your database on Heroku.com to S3. Fork uses the fog gem}
-    gem.description = %Q{http://almosteffortless.com/2010/04/14/automated-heroku-backups/ My fork replaces right_aws/aws-s3 with the fog gem}
+    gem.summary = %Q{Gem to backup your database from Heroku to S3. Fork uses the fog gem}
+    gem.description = %Q{http://trevorturk.com/2010/04/14/automated-heroku-backups/ My fork replaces right_aws/aws-s3 with the fog gem}
     gem.email = "jack@jackchu.com"
     gem.homepage = "http://github.com/kamui/heroku_s3_backup"
     gem.authors = ["Eric Davis", "Trevor Turk", "Jesse Storimer", "Jack Chu"]

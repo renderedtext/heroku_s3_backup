@@ -37,9 +37,14 @@ class HerokuS3Backup
       directory.files.create(:key => "db/#{name}", :body => open(backup_path))
       system "rm #{backup_path}"
       puts "[#{Time.now}] heroku:backup complete"
-      # rescue Exception => e
-      #   require 'toadhopper'
-      #   Toadhopper(ENV['hoptoad_key']).post!(e)
+      
+    rescue Exception => e
+      if ENV['HOPTOAD_KEY']
+        require 'toadhopper'
+        Toadhopper(ENV['HOPTOAD_KEY']).post!(e)
+      else
+        puts "S3 backup error: #{e}"
+      end
     end
   end
 end

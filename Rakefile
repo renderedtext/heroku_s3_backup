@@ -11,7 +11,7 @@ begin
     gem.homepage = "http://github.com/kamui/heroku_s3_backup"
     gem.authors = ["Eric Davis", "Trevor Turk", "Jesse Storimer", "Jack Chu"]
     gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
-    gem.add_dependency('fog', '~> 0.3')
+    gem.add_dependency('fog', '>= 0.4.1')
     gem.files =  FileList[
                           "[A-Z]*",
                           "init.rb",

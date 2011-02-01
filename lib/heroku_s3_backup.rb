@@ -6,12 +6,9 @@ class HerokuS3Backup
       puts "[#{Time.now}] heroku:backup started"
       
       # Set app
-      app = if options[:name]
-        if options[:name] == false
-          ""
-        else
-          options[:name] + "-"
-        end
+      app = if options[:name] == false
+      elsif options[:name]
+        options[:name] + "-"
       else
         ENV['APP_NAME'] + "-"
       end
@@ -30,7 +27,14 @@ class HerokuS3Backup
         "db"
       end
       
-      name = "#{app}#{Time.now.strftime('%Y-%m-%d-%H%M%S')}.sql"
+      # Set timestamp
+      timestamp = if options[:timestamp]
+        options[:timestamp]
+      else
+        "%Y-%m-%d-%H%M%S"
+      end
+      
+      name = "#{app}#{Time.now.strftime(timestamp)}.sql"
 
       db = ENV['DATABASE_URL'].match(/postgres:\/\/([^:]+):([^@]+)@([^\/]+)\/(.+)/)
       system "PGPASSWORD=#{db[2]} pg_dump -Fc -i --username=#{db[1]} --host=#{db[3]} #{db[4]} > tmp/#{name}"

@@ -6,7 +6,7 @@ class HerokuS3Backup
       puts "[#{Time.now}] heroku:backup started"
       
       # Set app
-      app = if options[:app]
+      app = if options[:name]
         if options[:name] == false
           ""
         else
